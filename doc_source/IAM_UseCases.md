@@ -31,24 +31,24 @@
 
 В самой же Example Corp, разным группам необходимы разные разрешения:
 + **System administrators** – Необходимы разрешения создавать и управлять образами AMI, инстансами, мгновенными снимками, томами, группами безопасности и так далее\. Джон присоединяет встроенную управляему AWS политику `AmazonEC2FullAccess` к группе SysAdmins, что дает членам группы использовать все действия связанные с Amazon EC2\.
-+ **Developers** – Need the ability to work with instances only\. John therefore creates and attaches a policy to the Developers group that allows developers to call `DescribeInstances`, `RunInstances`, `StopInstances`, `StartInstances`, and `TerminateInstances`\. 
-**Note**  
-Amazon EC2 uses SSH keys, Windows passwords, and security groups to control who has access to the operating system of specific Amazon EC2 instances\. There's no method in the IAM system to allow or deny access to the operating system of a specific instance\.
-+ **Managers** – Should not be able to perform any Amazon EC2 actions except listing the Amazon EC2 resources currently available\. Therefore, John creates and attaches a policy to the Managers group that only lets them call Amazon EC2 "Describe" API operations\.
++ **Developers** – Необходима возможность работать только с инстансами\. Поэтому Джон создает и присоединяет политику к группе Developers, которая позволяет разработчикам совершать вызовы API `DescribeInstances`, `RunInstances`, `StopInstances`, `StartInstances` и `TerminateInstances`\. 
+**Имейте ввиду**  
+Amazon EC2 использует ключи SSH, пароли Windows и группы безопасности для контроля доступа к операционным системам на конкретных инстансах Amazon EC2\. Не существует методов в системе IAM для разрешения или запрета доступа к операционной системе конкретного инстанса\.
++ **Managers** – Не должны совершать каких либо действий связанных с Amazon EC2 за исключением просмотра доступных на текущий момент ресурсов Amazon EC2\. Поэтому Джон создает и присоединяет политику к группе Managers которая позволяет им вызывать операции API "Describe" в Amazon EC2\.
 
-For examples of what these policies might look like, see [Example IAM Identity\-Based Policies](access_policies_examples.md) and [Using AWS Identity and Access Management](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/index.html?UsingIAM.html) in the *Amazon EC2 User Guide for Linux Instances*\.
+Для примеров того, как могут выглядить подобные политики смотрите [Примеры политик на основе идентификаторов IAM](access_policies_examples.md) и [Использование управления идентификацией и доступом AWS](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/index.html?UsingIAM.html) в *Руководстве пользователя по Amazon EC2 для использования инстансов с Linux*\.
 
-### User's Job Function Change<a name="EC2_UserRoleChange"></a>
+### Изменение должности сотрудника<a name="EC2_UserRoleChange"></a>
 
-At some point, one of the developers, Paulo, changes job functions and becomes a manager\. John moves Paulo from the Developers group to the Managers group\. Now that he's in the Managers group, Paulo's ability to interact with Amazon EC2 instances is limited\. He can't launch or start instances\. He also can't stop or terminate existing instances, even if he was the user who launched or started the instance\. He can list only the instances that Example Corp users have launched\.
+В какой-то момент, один из разработчиков, Пауло, сменил должность и стал менеджером\. Джон переносит Пауло из группы Developers в группу  Managers\. Теперь, когда он попал в группу Managers, возможности Пауло по работе с инстансами Amazon EC2 ограничена\. Он не может создавать или запускать инстансы\. Также он не может останавливать или удалять существующие инстансы, даже если он сам был пользователем, который создал или запустил инстанс\. Он только может просматривать список инстансов, которые были созданы пользователями Example Corp\.
 
-## Use Case for IAM with Amazon S3<a name="UseCase_S3"></a>
+## Вариант использования IAM с Amazon S3<a name="UseCase_S3"></a>
 
-Companies like Example Corp would also typically use IAM with Amazon S3\. John has created an Amazon S3 bucket for the company called *aws\-s3\-bucket*\.
+Такие компании как Example Corp также обычно используют IAM с Amazon S3\. Джон создал для компании бакет Amazon S3 и назвал его *aws\-s3\-bucket*\.
 
-### Creation of Other Users and Groups<a name="S3_CreationOtherUsersGroups"></a>
+### Создание других пользователей и групп<a name="S3_CreationOtherUsersGroups"></a>
 
-As employees, Zhang and Mary each need to be able to create their own data in the company's bucket\. They also need to read and write shared data that all developers work on\. To enable this, John logically arranges the data in aws\-s3\-bucket using an Amazon S3 key prefix scheme as shown in the following figure\.
+Как сотрудники, Мэри и Жанг должны иметь возможность вносить свои данные в бакет компании\. Также им необходима возможность читать и записывать общие данные, над которыми работают все разработчики\. Чтобы обеспечить это, Джон логически распределяет данные в бакете aws\-s3\-bucket используя схему префиксов ключей, как показано ниже\.
 
 ```
 /aws-s3-bucket
@@ -60,25 +60,25 @@ As employees, Zhang and Mary each need to be able to create their own data in th
         /managers
 ```
 
-John divides the master `/aws-s3-bucket` into a set of home directories for each employee, and a shared area for groups of developers and managers\.
+Джон разбивает бакет `/aws-s3-bucket` в набор домашних директорий для каждого сотрудника, а также в общую область для разработчиков и менеджеров\.
 
-Now John creates a set of policies to assign permissions to the users and groups:
-+ **Home directory access for Zhang** – John attaches a policy to Zhang that lets him read, write, and list any objects with the Amazon S3 key prefix `/aws-s3-bucket/home/Zhang/` 
-+ **Home directory access for Mary** – John attaches a policy to Mary that lets her read, write, and list any objects with the Amazon S3 key prefix `/aws-s3-bucket/home/mary/`
-+ **Shared directory access for the Developers group** – John attaches a policy to the group that lets developers read, write, and list any objects in `/aws-s3-bucket/share/developers/`
-+ **Shared directory access for the Managers group** – John attaches a policy to the group that lets managers read, write, and list objects in `/aws-s3-bucket/share/managers/`
+Теперь Джон создает набор политик для того, чтобы назначить разрешения для пользователей и групп:
++ **Доступ в домашнюю директорию для Жанга** – Джон присоединияет политику Жангу, что позволит ему читать, записывать и просматривать любые объекты соотвествующие префиксу `/aws-s3-bucket/home/Zhang/` 
++ **Доступ в домашнюю директорию для Мэри** – Джон присоединяет политику Мэри, что позволяет ей читать, записывать и просмотривать любые объекты соответствующие префиксу`/aws-s3-bucket/home/mary/`
++ **Доступ в общую директорию для группы Developers** – Джон присоединяет политику к группе, таким образом позволяя разработчикам читать, записывать и просматривать любые объекты в `/aws-s3-bucket/share/developers/`
++ **Доступ в общую директорию для группы Managers** – Джон присоединяет политику к группе, таким образом позволяя менеджерам читать, записывать и просматривать любые объекты в `/aws-s3-bucket/share/managers/`
 
-**Note**  
-Amazon S3 doesn't automatically give a user who creates a bucket or object permission to perform other actions on that bucket or object\. Therefore, in your IAM policies, you must explicitly give users permission to use the Amazon S3 resources they create\.
+**Обратите внимание**  
+Amazon S3 не дает автоматически пользователю, который создает бакет или объект, разрешение на выполнение других действий с этим бакетом или объектом\. Поэтому в политиках IAM вы должны явно предоставить пользователям разрешение на использование тех ресурсов Amazon S3, которые они создали\.
 
-For examples of what these policies might look like, see [Access Control](https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingAuthAccess.html) in the *Amazon Simple Storage Service Developer Guide*\. For information on how policies are evaluated at runtime, see [Policy Evaluation Logic](reference_policies_evaluation-logic.md)\. 
+Для примера того, как могут выглядеть подобные политики, смотрите раздел [Контроль доступа](https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingAuthAccess.html) в *Руководстве разработчика Amazon Simple Storage Service*\. Для получения информации о том, как происходит оценка политики во время выполнения, смотрите [Логика оценки политик](reference_policies_evaluation-logic.md)\. 
 
-### User's Job Function Change<a name="S3_UserRoleChange"></a>
+### Изменение должности сотрудника<a name="S3_UserRoleChange"></a>
 
-At some point, one of the developers, Zhang, changes job functions and becomes a manager\. We assume that he no longer needs access to the documents in the `share/developers` directory\. John, as an admin, moves Zhang to the `Managers` group and out of the `Developers` group\. With just that simple reassignment, Zhang automatically gets all permissions granted to the `Managers` group, but can no longer access data in the `share/developers` directory\.
+В какой-то момент, один из разработчиков, Жэнг меняет должность и становится менеджером\. Мы предполагаем, что ему более не нужен доступ к документам в директории `share/developers`\. Джон, как администратор, переносит Жэнга в группу `Managers` и исключает его из группы `Developers`\. Путем такого простого переназначения Жэнг автоматически получает все необходимые разрешения группы `Managers` и, в то же время, больше не имеет доступа к данным в директории `share/developers`\.
 
-### Integration with a Third\-Party Business<a name="S3_3rdPartyBusiness"></a>
+### Интеграция со сторонним бизнесом<a name="S3_3rdPartyBusiness"></a>
 
-Organizations often work with partner companies, consultants, and contractors\. Example Corp has a partner called the Widget Company, and a Widget Company employee named Shirley needs to put data into a bucket for Example Corp's use\. John creates a group called *WidgetCo* and a user named `Shirley` and adds Shirley to the WidgetCo group\. John also creates a special bucket called *aws\-s3\-bucket1* for Shirley to use\.
+Организации часто работают с компаниями-партнерами, консультантами и подрядчиками\. У Example Corp есть партнер  - Widget Company и сотруднику Widget Company, Ширли необходимо положить данные в бакет для использования в Example Corp\. Джон создает группу *WidgetCo* и пользователя `Shirley`, после чего добавляет Shirley в группу WidgetCo\. Джон также создает специальный бакет *aws\-s3\-bucket1* для того, чтобы его могла использовать Ширли\.
 
-John updates existing policies or adds new ones to accommodate the partner Widget Company\. For example, John can create a new policy that denies members of the WidgetCo group the ability to use any actions other than write\. This policy would be necessary only if there's a broad policy that gives all users access to a wide set of Amazon S3 actions\.
+Джон обновляет существующие политики или добавляет новые, чтобы предоставить доступ партнерской компании Widget\. Например, Джон может создать новую политику, которая запрещает членам группы WidgetCo любые действия, кроме записи\. Эта политика будет необходима, только если существует широкая политика, которая предоставляет всем пользователям доступ к широкому набору действий Amazon S3\.
