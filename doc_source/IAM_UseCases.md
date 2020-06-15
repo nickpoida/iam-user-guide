@@ -1,36 +1,36 @@
-# Business Use Cases<a name="IAM_UseCases"></a>
+# Варианты использования в бизнесе<a name="IAM_UseCases"></a>
 
-A simple business use case for IAM can help you understand basic ways you might implement the service to control the AWS access that your users have\. The use case is described in general terms, without the mechanics of how you'd use the IAM API to achieve the results you want\. 
+Просто пример вариант использования IAM в бизнесе поможет вам понять основные способы реализации управления доступами ваших пользователей в AWS\. Этот вариант использования описан в общих терминах, без развернутого описания механики IAM API, которое вы будете использовать для достижения желаемых резульатов\. 
 
-This use case looks at two typical ways a fictional company called Example Corp might use IAM\. The first scenario considers Amazon Elastic Compute Cloud \(Amazon EC2\)\. The second considers Amazon Simple Storage Service \(Amazon S3\)\. 
+В этом сценарии использования рассматриваются два типичных способа использования IAM вымышленной компанией Example Corp\. В первом сценарии рассматривается Amazon Elastic Compute Cloud \(Amazon EC2\)\. А во втором - Amazon Simple Storage Service \(Amazon S3\)\. 
 
-For more information about using IAM with other services from AWS, see [AWS Services That Work with IAM](reference_aws-services-that-work-with-iam.md)\.
+Для получения дополнительной информации об использовании IAM с другими сервисами AWS, ознакомьтесь с документом [Сервисы AWS которые работают с IAM](reference_aws-services-that-work-with-iam.md)\.
 
-**Topics**
-+ [Initial Setup of Example Corp](#InitSetupExampleCorp_IAM)
-+ [Use Case for IAM with Amazon EC2](#UseCase_EC2)
-+ [Use Case for IAM with Amazon S3](#UseCase_S3)
+**Темы**
++ [Начальная настройка для Example Corp](#InitSetupExampleCorp_IAM)
++ [Вариант использования IAM с Amazon EC2](#UseCase_EC2)
++ [Вариант использования IAM с Amazon S3](#UseCase_S3)
 
-## Initial Setup of Example Corp<a name="InitSetupExampleCorp_IAM"></a>
+## Начальная настройка для Example Corp<a name="InitSetupExampleCorp_IAM"></a>
 
-John is the founder of Example Corp\. Upon starting the company, he creates his own AWS account and uses AWS products by himself\. Then he hires employees to work as developers, admins, testers, managers, and system administrators\. 
+Джон - основатель Example Corp\. С момента основания компании, он создает себе учетную запись AWS и самостоятельно использует продукты AWS\. Затем он нанимает сотрудников для работы в качестве разработчиков, администраторов, тестировщиков, менеджеров и системных администраторов.\. 
 
-John uses the AWS Management Console with the AWS account root user credentials to create a user for himself called *John*, and a group called *Admins*\. He gives the Admins group permissions to perform all actions on all the AWS account's resources using the AWS managed policy [AdministratorAccess](https://console.aws.amazon.com/iam/home#policies/arn:aws:iam::aws:policy/AdministratorAccess)\. Then he adds the John user to the Admins group\. For a step\-by\-step guide to creating an Administrators group and an IAM user for yourself, then adding your user to the Administrators group, see [Creating Your First IAM Admin User and Group](getting-started_create-admin-group.md)\. 
+Джон использует консоль управления AWS Management Console с корневой(root) учетной записью AWS для создания себе пользователя *John* и группы *Admins*\. Он предоставляте группе Admins разрешения на выполнение всех действий со всеми ресурсами AWS в пределах учетной записи,используя встроенную политику [AdministratorAccess](https://console.aws.amazon.com/iam/home#policies/arn:aws:iam::aws:policy/AdministratorAccess)\. Затем он добавляет пользователя John в группу Admins\. Пошаговое руководство по созданию группы администраторов и пользователя IAM для себя, а затем добавлению своего пользователя в группу администраторов см. в разделе [Создание первого административного пользователя и группы IAM](getting-started_create-admin-group.md)\. 
 
-At this point, John can stop using the root user's credentials to interact with AWS, and instead he begins using only his user credentials\.
+С этого момента Джон может перестать использовать корневые(root) учетные данные для работы с AWS, а, вместо этого, начать использовать свои личные учетные данные\.
 
-John also creates a group called *AllUsers* so that he can easily apply any account\-wide permissions to all users in the AWS account\. He adds himself to the group\. He then creates a group called *Developers*, a group called *Testers*, a group called *Managers*, and a group called *SysAdmins*\. He creates users for each of his employees, and puts the users in their respective groups\. He also adds them all to the AllUsers group\. For information about creating groups, see [Creating IAM Groups](id_groups_create.md)\. For information about creating users, see [Creating an IAM User in Your AWS Account](id_users_create.md)\. For information about adding users to groups, see [Managing IAM Groups](id_groups_manage.md)\. 
+Джон также создает группу *AllUsers* таким образом он может с лекгостью применять разрешения для всех пользователей в пределах аккаунта AWS\. Он добавляет себя в группу\. Затем он создает группу *Developers*, группу *Testers*, группу *Managers* и группу *SysAdmins*\. Он создает пользователей для каждого из сотрудников и помещает пользователей в соответствующие группы\. Кроме того, он добавляет их всех в группу AllUsers\. Для получения информации о создании групп, смотрите [Создание групп в IAm](id_groups_create.md)\. Для получения информации о создании пользователей, смотрите [Создание пользователя в IAM в аккаунте AWS](id_users_create.md)\. Для получения информации о добавлении пользователей в группы, смотрите [Управление группами IAM](id_groups_manage.md)\. 
 
-## Use Case for IAM with Amazon EC2<a name="UseCase_EC2"></a>
+## Вариант использования IAM с Amazon EC2<a name="UseCase_EC2"></a>
 
-A company like Example Corp typically uses IAM to interact with services like Amazon EC2\. To understand this part of the use case, you need a basic understanding of Amazon EC2\. For more information about Amazon EC2, go to the [Amazon EC2 User Guide for Linux Instances](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/)\.
+Такие компании, как Example Corp, обычно используют IAM для взаимодействия с такими сервисами, как Amazon EC2\. Для понимания этой части описания данного варианта использования, вам необходимо базовое понимание Amazon EC2\. Для получения информации об Amazon EC2, обратитесь к [Руководству пользователя по Amazon EC2 для использования инстансов с Linux](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/)\.
 
-### Amazon EC2 Permissions for the Groups<a name="EC2_PermissionsGroups"></a>
+### Разрешения Amazon EC2 для групп<a name="EC2_PermissionsGroups"></a>
 
-To provide "perimeter" control, John attaches a policy to the AllUsers group\. This policy denies any AWS request from a user if the originating IP address is outside Example Corp's corporate network\.
+Для обеспечения контроля "периметра" Джон присоединяет политику к группе AllUsers\. Эта политика запрещает все запросы к AWS от пользователей, если его IP адрес не находится в пределах корпоративной сети Example Corp\.
 
-At Example Corp, different groups require different permissions:
-+ **System administrators** – Need permission to create and manage AMIs, instances, snapshots, volumes, security groups, and so on\. John attaches the `AmazonEC2FullAccess` AWS managed policy to the SysAdmins group that gives members of the group permission to use all the Amazon EC2 actions\.
+В самой же Example Corp, разным группам необходимы разные разрешения:
++ **System administrators** – Необходимы разрешения создавать и управлять образами AMI, инстансами, мгновенными снимками, томами, группами безопасности и так далее\. Джон присоединяет встроенную управляему AWS политику `AmazonEC2FullAccess` к группе SysAdmins, что дает членам группы использовать все действия связанные с Amazon EC2\.
 + **Developers** – Need the ability to work with instances only\. John therefore creates and attaches a policy to the Developers group that allows developers to call `DescribeInstances`, `RunInstances`, `StopInstances`, `StartInstances`, and `TerminateInstances`\. 
 **Note**  
 Amazon EC2 uses SSH keys, Windows passwords, and security groups to control who has access to the operating system of specific Amazon EC2 instances\. There's no method in the IAM system to allow or deny access to the operating system of a specific instance\.
